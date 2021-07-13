@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #D9E6F6;
+    background-color: lightpink;
     font-family: sans-serif;
   }
 
@@ -34,8 +34,8 @@ const GlobalStyle = createGlobalStyle`
 
 const theme = {
   colors: {
-    primary: '#0070f3',
-  },
+    primary: 'white'
+  }
 }
 
 export default function App({ Component, pageProps }) {
