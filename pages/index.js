@@ -25,22 +25,30 @@ function ProfileSidebar(propriedades) {
       <AlurakutProfileSidebarMenuDefault />
       <hr/>
       <p>Outras Redes</p>
-      <hr noShade/>
-      <a href="https://www.instagram.com/juliarezende8/?hl=pt-br">
-          <img src={`https://logodownload.org/wp-content/uploads/2017/04/instagram-logo-3.png`} width="30px" height="30px" />
-         
-      </a>
+      <hr/>
+      <ProfileRelationsBoxWrapper>
+        <ul>
+          <a href="https://www.instagram.com/juliarezende8/?hl=pt-br">
+              <img src={`https://logodownload.org/wp-content/uploads/2017/04/instagram-logo-3.png`} width="30px" height="30px" />
+            
+          </a>
+          <a href="https://www.facebook.com/julia.rezende.98434">
+              <img src={`https://i0.wp.com/multarte.com.br/wp-content/uploads/2020/09/facebook-logomarca3.png?resize=512%2C512&ssl=1`} width="30px" height="30px" />
+            
+          </a>
+          <a href="https://www.linkedin.com/in/julia-rezende-1732a3188/">
+              <img src={`https://image.flaticon.com/icons/png/512/174/174857.png`} width="30px" height="30px" />
+            
+          </a>
+        </ul>
+      </ProfileRelationsBoxWrapper>
     </Box>
   ) 
 }
 
 export default function Home() {
   //Constantes
-    const [comunidades, setComunidades] = React.useState([{
-      title:'black widow', 
-      id: '12345',
-      link: 'https://www.youtube.com/watch?v=Gm3o0bfGP3g',
-      }]);
+    const [comunidades, setComunidades] = React.useState([]);
     const githubUser = 'juliarezende34';
     const pessoasFavoritas = ['elmaia', 'jemaf', 'erikneves04'];
     const [userData, setUserData] = useState({});
@@ -66,6 +74,31 @@ export default function Home() {
       handleUserData();
     }, [])
 
+    React.useEffect(function(){
+      //API GraphQL
+      fetch(`https://graphql.datocms.com/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'e97116401c46af7e98838f14447f2a',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({"query": `query{
+          allCommunities {
+            id
+            title
+            link
+            image
+          }
+        }`})
+      })
+      .then((response) => response.json())
+      .then((respostaCompleta) => {
+        const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+        setComunidades(comunidadesVindasDoDato)
+      })
+    },[])
+
   return (
     <>
     <AlurakutMenu githubUser={githubUser} />
@@ -89,17 +122,36 @@ export default function Home() {
               e.preventDefault();
               const dadosDoForm = new FormData(e.target);
               const comunidade = {
-                id: new Date().toISOString(),
-                idImage: Math.random(),
+                image: dadosDoForm.get('image'),
                 title: dadosDoForm.get('title'),
                 link: dadosDoForm.get('link'),
+                creatorSlug: githubUser
               }
-              const comunidadesAtualizadas = [...comunidades, comunidade];
-              setComunidades(comunidadesAtualizadas)
+
+              fetch('/api/comunidades', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(comunidade)
+              })
+
+              .then(async (response)=>{
+                const dados = await response.json();
+                const comunidade = dados.registroCriado;
+                const comunidadesAtualizadas = [...comunidades, comunidade];
+                setComunidades(comunidadesAtualizadas)
+              })
+
+              
           }}>
             <div>
               <input placeholder="Qual vai ser o nome da sua comunidade?" name="title" aria-label="Qual vai ser o nome da sua comunidade?" type="text"/>
             </div>   
+
+            <div>
+              <input placeholder="Insira a URL da foto de capa" name="image" aria-label="Insira a URL da foto de capa"/>
+            </div> 
 
             <div>
               <input placeholder="Insira o link que representa a comunidade" name="link" aria-label="Insira o link que representa a comunidade"/>
@@ -162,7 +214,7 @@ export default function Home() {
               return (
                 <li key={itemAtual.id}>
                   <a href={`${itemAtual.link}`}>
-                    <img src={`https://picsum.photos/100/100?${itemAtual.idImage}`}/>
+                    <img src={`${itemAtual.image}`}/>
                     <span>{itemAtual.title}</span>
                   </a>
                 </li>
