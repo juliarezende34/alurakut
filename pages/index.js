@@ -1,3 +1,4 @@
+//Imports
 import MainGrid from "../src/components/MainGrid";
 import Box from "../src/components/Box";
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, AlurakutStyles, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
@@ -5,63 +6,74 @@ import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import { useEffect, useState } from "react";
 import React from "react";
 
+//Função que monta a barra do perfil
 function ProfileSidebar(propriedades) {
   return (
     <Box as="aside">
-      <img src={`https://github.com/${propriedades.githubUser}.png`} style={{ borderRadius: '8px' }} />
-      <hr/>
-      <a className="" href={`https://github.com/${propriedades.githubUser}`}>
-        @{propriedades.githubUser}
-        
+      <a href = {`https://github.com/${propriedades.githubUser}`}>
+        <img src={`https://github.com/${propriedades.githubUser}.png`} style={{ borderRadius: '8px' }} />
       </a>
-      <div></div>
+
+      <hr/>
+
+      <a href = {`https://github.com/${propriedades.githubUser}`}>
+        @{propriedades.githubUser}
+      </a>
+        
+      <hr/>
+
       <AlurakutProfileSidebarMenuDefault />
+      <hr/>
+      <p>Outras Redes</p>
+      <hr noShade/>
+      <a href="https://www.instagram.com/juliarezende8/?hl=pt-br">
+          <img src={`https://logodownload.org/wp-content/uploads/2017/04/instagram-logo-3.png`} width="30px" height="30px" />
+         
+      </a>
     </Box>
   ) 
 }
 
-function url(item){
-  location.href=item.link;
-}
-
 export default function Home() {
-  const [comunidades, setComunidades] = React.useState([{
-    title:'black widow stans', 
-    id: '12345',
-    link: 'https://www.youtube.com/watch?v=Gm3o0bfGP3g',
-    }]);
-  const githubUser = 'juliarezende34';
-  const pessoasFavoritas = ['elmaia', 'jemaf', 'erikneves04'];
+  //Constantes
+    const [comunidades, setComunidades] = React.useState([{
+      title:'black widow', 
+      id: '12345',
+      link: 'https://www.youtube.com/watch?v=Gm3o0bfGP3g',
+      }]);
+    const githubUser = 'juliarezende34';
+    const pessoasFavoritas = ['elmaia', 'jemaf', 'erikneves04'];
+    const [userData, setUserData] = useState({});
+    const [followers, setFollowers] = useState([]);
+  
+  //Carregar os seguidores
+    useEffect(() => {
+      async function handleLoadFollowers() {
+        await fetch(`https://api.github.com/users/${githubUser}/followers`)
+        .then(user => user.json())
+        .then(user => setFollowers(user))
+        .catch(err => console.log(err));
+      }
 
-  const [userData, setUserData] = useState({});
-  const [followers, setFollowers] = useState([]);
+      async function handleUserData() {
+        await fetch(`https://api.github.com/users/${githubUser}`)
+        .then(user => user.json())
+        .then(data => setUserData(data))
+        .catch(err => console.log(err));
+      }
 
-  useEffect(() => {
-    async function handleLoadFollowers() {
-      await fetch(`https://api.github.com/users/${githubUser}/followers`)
-      .then(user => user.json())
-      .then(user => setFollowers(user))
-      .catch(err => console.log(err));
-    }
-
-    async function handleUserData() {
-      await fetch(`https://api.github.com/users/${githubUser}`)
-      .then(user => user.json())
-      .then(data => setUserData(data))
-      .catch(err => console.log(err));
-    }
-
-    handleLoadFollowers();
-    handleUserData();
-  }, [])
+      handleLoadFollowers();
+      handleUserData();
+    }, [])
 
   return (
     <>
     <AlurakutMenu githubUser={githubUser} />
     <MainGrid>
       <div className="profileArea" style={{gridArea: "profileArea"}}>
-       <ProfileSidebar githubUser={githubUser} />
+        <ProfileSidebar githubUser={githubUser} />
       </div>
+
       <div className="welcomeArea" style={{gridArea: "welcomeArea"}}>
         <Box>
           <h1 className="title">
@@ -72,6 +84,7 @@ export default function Home() {
 
         <Box>
           <h2 className='subTitle'>O que você deseja fazer?</h2>
+          
           <form onSubmit={function handleCriaComunidade(e){
               e.preventDefault();
               const dadosDoForm = new FormData(e.target);
@@ -99,11 +112,13 @@ export default function Home() {
           </form>
         </Box>
       </div>
+
       <div className="profileRelationsArea" style={{gridArea: "profileRelationsArea"}}>
         <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle">
             Pessoas da Comunidade ({pessoasFavoritas.length})
           </h2>
+
           <ul>
             {pessoasFavoritas.map(pessoa => {
               return (
@@ -122,6 +137,7 @@ export default function Home() {
           <h2 className="smallTitle">
             Seguidores 
           </h2>
+
           <ul>
             {followers.map(pessoa => {
               return (
@@ -140,6 +156,7 @@ export default function Home() {
         <h2 className="smallTitle">
             Minhas comunidades ({comunidades.length})
         </h2>
+
         <ul>
             {comunidades.map((itemAtual) => {
               return (
@@ -153,7 +170,9 @@ export default function Home() {
             })}
           </ul>
         </ProfileRelationsBoxWrapper>
+      
       </div>
+
     </MainGrid>
     </>
   )
