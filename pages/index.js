@@ -17,14 +17,19 @@ function ProfileSidebar(propriedades) {
       <div></div>
       <AlurakutProfileSidebarMenuDefault />
     </Box>
-  )
+  ) 
+}
+
+function url(item){
+  location.href=item.link;
 }
 
 export default function Home() {
   const [comunidades, setComunidades] = React.useState([{
-    title:'Odeio acordar cedo', 
+    title:'black widow stans', 
     id: '12345',
-    image: 'https://www.pngkey.com/png/full/14-148130_minion-imagenes-de-100x100-pixeles.png'}]);
+    link: 'https://www.youtube.com/watch?v=Gm3o0bfGP3g',
+    }]);
   const githubUser = 'juliarezende34';
   const pessoasFavoritas = ['elmaia', 'jemaf', 'erikneves04'];
 
@@ -72,19 +77,20 @@ export default function Home() {
               const dadosDoForm = new FormData(e.target);
               const comunidade = {
                 id: new Date().toISOString(),
-                titulo: dadosDoForm.get('title'),
-                image: dadosDoForm.get('image'),
+                idImage: Math.random(),
+                title: dadosDoForm.get('title'),
+                link: dadosDoForm.get('link'),
               }
-              const comunidadesAtualizadas = [...comunidades, comunidade]
+              const comunidadesAtualizadas = [...comunidades, comunidade];
               setComunidades(comunidadesAtualizadas)
           }}>
             <div>
-              <input placeholder="Qual vai ser o nome da sua comunidade?" name="title" aria-label="Qual vai ser o nome da sua comunidade?" type = "text"/>
+              <input placeholder="Qual vai ser o nome da sua comunidade?" name="title" aria-label="Qual vai ser o nome da sua comunidade?" type="text"/>
             </div>   
 
             <div>
-              <input placeholder="Coloque uma URL para usarmos de capa" name="image" aria-label="Coloque uma URL para usarmos de capa" />
-            </div>   
+              <input placeholder="Insira o link que representa a comunidade" name="link" aria-label="Insira o link que representa a comunidade"/>
+            </div> 
 
             <button>
               Criar comunidade
@@ -102,7 +108,7 @@ export default function Home() {
             {pessoasFavoritas.map(pessoa => {
               return (
                 <li key={pessoa}>
-                  <a href={`/users/${pessoa}`}>
+                  <a href={`https://github.com/${pessoa}`}>
                   <img src={`https://github.com/${pessoa}.png`} />
                   <span>{pessoa}</span>
                 </a>
@@ -120,7 +126,7 @@ export default function Home() {
             {followers.map(pessoa => {
               return (
                 <li key={pessoa.id}>
-                  <a href={`/users/${pessoa.login}`}>
+                  <a href={`https://github.com/${pessoa.login}`}>
                   <img src={`https://github.com/${pessoa.login}.png`} />
                   <span>{pessoa.login}</span>
                 </a>
@@ -135,13 +141,13 @@ export default function Home() {
             Minhas comunidades ({comunidades.length})
         </h2>
         <ul>
-            {comunidades.map(itemAtual => {
+            {comunidades.map((itemAtual) => {
               return (
                 <li key={itemAtual.id}>
-                  <a href={`/users/${itemAtual.title}`} key={itemAtual.title}>
-                  <img src={itemAtual.image} />
-                  <span>{itemAtual.title}</span>
-                </a>
+                  <a href={`${itemAtual.link}`}>
+                    <img src={`https://picsum.photos/100/100?${itemAtual.idImage}`}/>
+                    <span>{itemAtual.title}</span>
+                  </a>
                 </li>
               )
             })}
