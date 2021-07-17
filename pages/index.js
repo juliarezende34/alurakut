@@ -5,6 +5,8 @@ import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, AlurakutStyles, OrkutN
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
 import React from "react";
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 
 //Função que monta a barra do perfil
 function ProfileSidebar(propriedades) {
@@ -46,10 +48,10 @@ function ProfileSidebar(propriedades) {
   ) 
 }
 
-export default function Home() {
+export default function Home(props) {
   //Constantes
     const [comunidades, setComunidades] = React.useState([]);
-    const githubUser = 'juliarezende34';
+    const githubUser = props.githubUser;
     const pessoasFavoritas = ['elmaia', 'jemaf', 'erikneves04'];
     const [userData, setUserData] = useState({});
     const [followers, setFollowers] = useState([]);
@@ -228,4 +230,33 @@ export default function Home() {
     </MainGrid>
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context);
+  const token = cookies.USER_TOKEN;
+  
+  
+  const { isAuthenticated } = await fetch("http://localhost:3000/api/auth", {
+    headers: {
+      Authorization: token
+    }
+  })
+.then((resposta) => resposta.json())
+
+if(!isAuthenticated){
+  return{
+    redirect:{
+      destination: '/login',
+      permanent: false,
+    }
+  }
+}
+const{githubUser} = jwt.decode(token)
+
+return {
+    props: {
+      githubUser
+    },
+  }
 }
