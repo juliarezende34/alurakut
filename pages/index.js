@@ -165,6 +165,24 @@ export default function Home(props) {
 
           </form>
         </Box>
+
+        <Box>
+          <h2 className='subTitle'>Deixe seu scrap para {githubUser}! =D</h2>
+          <form>
+            <div>
+              <input placeholder="Digite seu nome" name="nome" aria-label="Digite seu nome"/>
+            </div>
+
+            <div>
+              <input placeholder="Digite o texto" name="text" aria-label="Digite o texto"/>
+            </div>
+            <button>
+              Enviar scrap
+            </button>
+          </form>
+
+        </Box>
+
       </div>
 
       <div className="profileRelationsArea" style={{gridArea: "profileRelationsArea"}}>
